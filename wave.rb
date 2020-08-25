@@ -1,6 +1,7 @@
 require 'faraday'
 require 'json'
 require 'dotenv'
+require 'csv'
 
 Dotenv.load
 
@@ -101,6 +102,13 @@ module Wave
 
     def get_line_items
       denormalize(get_all_invoices)
+    end
+
+    def build_csv(name: 'sales.csv')
+      line_items = get_line_items
+      rows = 0
+      CSV.open(name, 'wb') { |csv| csv << line_items.first.keys; line_items.each { |li| csv << li.values; rows += 1 } }
+      puts "#{rows} #{rows == 1 ? 'row' : 'rows'} written to #{name}"
     end
   end
 end
